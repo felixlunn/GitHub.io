@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Socio-Economic and Political Map Analysis</title>
+
+    <link rel="stylesheet" href="./resources/ol.css">
+    <link rel="stylesheet" href="resources/fontawesome-all.min.css">
+    <link href="resources/photon-geocoder-autocomplete.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./resources/ol-layerswitcher.css">
+    <link rel="stylesheet" href="./resources/qgis2web.css">
+
+    <style>
+      html, body {
+        background-color: #ffffff;
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+      .ol-control > * {
+        background-color: #f8f8f8!important;
+        color: #444444!important;
+        border-radius: 0px;
+      }
+      .ol-attribution a, .gcd-gl-input::placeholder, .search-layer-input-search::placeholder {
+        color: #444444!important;
+      }
+      .search-layer-input-search {
+        background-color: #f8f8f8!important;
+      }
+      .ol-control > *:focus, .ol-control >*:hover {
+        background-color: rgba(248, 248, 248, 0.7)!important;
+      }
+      .ol-control {
+        background-color: rgba(255,255,255,.4)!important;
+        padding: 2px!important;
+      }
+      #container {
+        display: flex;
+        height: 100vh;
+        width: 100vw;
+      }
+      #sidebar {
+        width: 25%;
+        padding: 15px;
+        box-sizing: border-box;
+        overflow-y: auto;
+        border-right: 1px solid #ccc;
+      }
+      #map {
+        width: 75%;
+        height: 100%;
+        position: relative;
+      }
+      #layer-context h3 {
+        border-bottom: 2px solid #eee;
+        padding-bottom: 5px;
+        margin-top: 20px;
+      }
+      /* Search bar styling */
+      #search-container {
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1001;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 5px 10px;
+        border-radius: 6px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      }
+      #geocoder {
+        width: 250px;
+        padding: 6px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+      #search-btn {
+        padding: 6px 10px;
+        margin-left: 5px;
+        border: none;
+        background-color: #0077cc;
+        color: #fff;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      #search-btn:hover {
+        background-color: #005fa3;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <div id="sidebar">
+        <h1>Winchester Constituency Analysis</h1>
+        <p>
+          This map visualises 3 categories of geo-referenced data for the Winchester Parliamentary Constituency. Additional data sets can be added. The three categories are as follows:
+        </p>
+       <div id="layer-context">
+          <h3>Demographic Clusters</h3>
+          <p>
+            Clusters are generated with 2021 Census Data.
+            <ul style="padding-left: 20px;">
+              <li>1. Educated, Economically Active Professionals</li>
+              <li>2. Young, Student-Dominated Areas</li>
+              <li>3. Older Retirees, Less Economically Active</li>
+              <li>4. Working Families</li>
+              <li>5. Areas of Higher Deprivation</li>
+              <li>6. High Performing Professionals</li>
+              <li>7. Areas of Older, More Stable, and high UK-Born Population</li>
+            </ul>
+          </p>
+        </div>
+        
+        <div style="
+    display: inline-block; 
+    border: 2px solid #3949ab; /* Blue border to match section titles */
+    border-radius: 8px; 
+    padding: 8px 15px; 
+    margin: 20px 0; 
+    background-color: #e8ebf7; /* Light background color */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+">
+    <p style="margin: 0;">
+        <a href="Tab2/cluster_details.html" target="_blank" style="
+            font-size: 1.5rem; 
+            text-decoration: none; 
+            color: #1a237e; /* Deep blue text color */
+            font-weight: 600;
+        ">Detailed Breakdown</a>
+    </p>
+</div>
+        <div id="layer-context">
+          <h3>Polling Estimates</h3>
+          <p>
+            These data layers are models by <a href="https://www.electoralcalculus.co.uk/homepage.html">Electoral Calculus</a>, profiling areas at the census output area level. 
+            This modelling has been undertaken externally, and its metholodology is unclear. It has been replicated here to contextualise the cluster modelling and cenus data overlay. <b>This data should be treated as a guide only and is not the author's work.</b>   <ul style="padding-left: 20px;">
+              <li>General Economic Outlook (5 point scale)</li>
+              <li>Estimated 2024 General Election Winner</li>
+              <li>Estimated 2019 General Election Winner</li>
+            </ul>
+          </p>
+        </div>
+        <div id="layer-context">
+          <h3>Census Data</h3>
+          <p>
+            These layers present raw census data at the output area level. Additional data points can be added upon request.
+            <ul style="padding-left: 20px;">
+              <li>1. Percentage Reporting Good/Very Good Health</li>
+              <li>2. Average Unpaid Care Hours per Person</li>
+              <li>3. Percentage with Level 4 Qualification (e.g. BA or above)</li>
+              <li>4. Living in 2–4 Dimensions of Deprivation</li>
+              <li>5. Percentage A/B Professionals</li>
+              <li>6. Median Household Income (Ward Level)</li>
+            </ul>
+          </p>
+        </div>
+        <small style="display:block;margin-top:20px;color:#666;">
+          Data primarily sourced from Nomis from the Office for National Statistics, as well as from Electoral Calculus. Modelling by Electoral Calculus is referenced as such. Generated using QGIS2Web.
+        </small>
+      </div>
+      <div id="map">
+        <div id="search-container">
+          <input id="geocoder" type="text" placeholder="Search location..." />
+          <button id="search-btn">🔍</button>
+        </div>
+        <div id="popup" class="ol-popup">
+          <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+          <div id="popup-content"></div>
+        </div>
+      </div>
+    </div>
+    <script src="resources/qgis2web_expressions.js"></script>
+    <script src="./resources/functions.js"></script>
+    <script src="./resources/ol.js"></script>
+    <script src="./resources/ol-layerswitcher.js"></script>
+    <script src="resources/photon-geocoder-autocomplete.min.js"></script>
+    <script src="layers/MedianHouseholdIncome_1.js"></script>
+    <script src="layers/ApproxofABProfessionals_2.js"></script>
+    <script src="layers/livingin24dimensionsofdeprivation_3.js"></script>
+    <script src="layers/Level4QualificationorAbove_4.js"></script>
+    <script src="layers/hrsofunpaidcareweek_5.js"></script>
+    <script src="layers/reportingVGGhealth_6.js"></script>
+    <script src="layers/2019GEEstimate_7.js"></script>
+    <script src="layers/2024GEEstimate_8.js"></script>
+    <script src="layers/EconomicOutlook_9.js"></script>
+    <script src="layers/Clusters_10.js"></script>
+    <script src="styles/MedianHouseholdIncome_1_style.js"></script>
+    <script src="styles/ApproxofABProfessionals_2_style.js"></script>
+    <script src="styles/livingin24dimensionsofdeprivation_3_style.js"></script>
+    <script src="styles/Level4QualificationorAbove_4_style.js"></script>
+    <script src="styles/hrsofunpaidcareweek_5_style.js"></script>
+    <script src="styles/reportingVGGhealth_6_style.js"></script>
+    <script src="styles/2019GEEstimate_7_style.js"></script>
+    <script src="styles/2024GEEstimate_8_style.js"></script>
+    <script src="styles/EconomicOutlook_9_style.js"></script>
+    <script src="styles/Clusters_10_style.js"></script>
+    <script src="./layers/layers.js" type="text/javascript"></script>
+    <script src="./resources/Autolinker.min.js"></script>
+    <script src="./resources/qgis2web.js"></script>
+
+    <!-- Working Search Functionality -->
+    <script>
+      const searchInput = document.getElementById("geocoder");
+      const searchButton = document.getElementById("search-btn");
+
+      function performSearch() {
+        const query = searchInput.value.trim();
+        if (query.length < 3) {
+          alert("Please enter at least 3 characters.");
+          return;
+        }
+
+        fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&limit=5`)
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.features && data.features.length > 0) {
+              const best = data.features[0];
+              const [lon, lat] = best.geometry.coordinates;
+              const coord = ol.proj.fromLonLat([lon, lat]);
+              map.getView().animate({ center: coord, zoom: 14, duration: 1000 });
+
+              const markerLayer = new ol.layer.Vector({
+                source: new ol.source.Vector({
+                  features: [new ol.Feature({ geometry: new ol.geom.Point(coord) })],
+                }),
+                style: new ol.style.Style({
+                  image: new ol.style.Circle({
+                    radius: 6,
+                    fill: new ol.style.Fill({ color: "#ff3333" }),
+                    stroke: new ol.style.Stroke({ color: "#fff", width: 2 }),
+                  }),
+                }),
+              });
+              map.addLayer(markerLayer);
+            } else {
+              alert("No results found for that location.");
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching geocode:", error);
+            alert("Error fetching location data.");
+          });
+      }
+
+      searchInput.addEventListener("keypress", function (e) {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          performSearch();
+        }
+      });
+
+      searchButton.addEventListener("click", performSearch);
+    </script>
+  </body>
+</html>

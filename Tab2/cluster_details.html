@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+    <title>Demographic Cluster Analysis - Winchester</title>
+
+    <!-- CHART.JS LIBRARY FOR DATA VISUALIZATION -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    
+    <!-- QGIS2WEB REQUIRED CSS LINKS -->
+    <link rel="stylesheet" href="./resources/ol.css">
+    <link rel="stylesheet" href="resources/fontawesome-all.min.css">
+    <link href="resources/photon-geocoder-autocomplete.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./resources/ol-layerswitcher.css">
+    <link rel="stylesheet" href="./resources/qgis2web.css">
+
+    <style>
+      /* --- Global & Typography Styles for Professional Look --- */
+      body {
+        font-family: 'Inter', Arial, sans-serif;
+        line-height: 1.6;
+        background-color: #f4f7f9; /* Light grey background */
+        color: #333;
+        margin: 0;
+        padding: 0;
+      }
+      .report-container {
+        max-width: 1000px;
+        margin: 40px auto;
+        padding: 30px;
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); /* Subtle shadow */
+      }
+      h1 {
+        color: #1a237e; /* Deep Blue/Navy Title */
+        font-size: 2.5rem;
+        font-weight: 700;
+        border-bottom: 3px solid #e0e0e0;
+        padding-bottom: 15px;
+        margin-bottom: 20px;
+      }
+      h2 {
+        color: #3949ab; /* Blue Accent for Section Titles */
+        font-size: 1.75rem;
+        font-weight: 600;
+        margin-top: 40px;
+        margin-bottom: 15px;
+      }
+      h3 {
+        color: #1a237e;
+        font-size: 1.5rem;
+        font-weight: 500;
+        border-left: 4px solid #3949ab;
+        padding-left: 10px;
+        margin-top: 25px;
+        margin-bottom: 15px;
+      }
+      p {
+        font-size: 1.2rem;
+        margin-bottom: 15px;
+      }
+      ul {
+        font-size: 1.2rem;
+        margin-bottom: 15px;
+        padding-left: 25px;
+        list-style: disc;
+      }
+
+      /* --- QGIS2WEB Control Styles --- */
+      .ol-control > * {
+        background-color: #f8f8f8!important;
+        color: #444444!important;
+        border-radius: 0px;
+      }
+
+      /* --- Map Styling --- */
+      #map {
+        width: 100%;
+        height: 550px;
+        margin: 30px 0;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      }
+      
+      /* --- Chart Styling --- */
+      #cluster-size-chart {
+          max-width: 900px;
+          height: 400px;
+          margin: 30px auto;
+          padding: 20px;
+          background: #fdfdff;
+          border-radius: 8px;
+          box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+      }
+
+      /* --- Cluster Card Styling --- */
+      .cluster-card {
+        padding: 20px;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        margin-bottom: 30px;
+        background-color: #f9f9ff;
+        transition: box-shadow 0.3s;
+      }
+      .cluster-card:hover {
+        box-shadow: 0 4px 12px rgba(57, 73, 171, 0.1);
+      }
+      .cluster-card h3 {
+        color: #1a237e;
+        border-left: 4px solid #3949ab;
+        padding-left: 15px;
+        margin-top: 0;
+      }
+      .cluster-card p {
+        margin: 5px 0;
+      }
+      
+      /* Heatmap image styling */
+      .report-container img {
+          max-width: 100%;
+          height: auto;
+          border-radius: 8px;
+          margin: 20px 0;
+          border: 1px solid #ddd;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="report-container">
+      
+      <h1>Demographic Cluster Analysis - Winchester</h1>
+      
+      <p>
+        This report presents an analysis of the Winchester constituency, segmented into 7 distinct demographic clusters. These clusters were generated through K-means clustering of 28 demographic measures, all collected at the 2021 Census. Results are displayed at the Output Area Level. Output Areas are the lowest level of geographical area for census statistics, first created after the 2001 Census.
+        OAs are made up of between 40 and 250 households and usually represent a resident population of between 100 and 625 persons.
+      </p>
+      
+
+      <!-- MAP SECTION -->
+      <h2>1. Geographical Cluster Distribution</h2>
+     
+   
+      <div id="map">
+        <div id="popup" class="ol-popup">
+          <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+          <div id="popup-content"></div>
+        </div>
+      </div> 
+
+      <!-- CHART AND OVERVIEW SECTION -->
+      <h2>2. Cluster Overview and Composition</h2>
+      <div id="cluster-size-chart">
+        <canvas id="clusterBarChart"></canvas>
+      </div>
+      
+      <!-- Detailed count list remains below the chart for reference -->
+      <p>Total Output Areas: 383</p>
+      <ul>
+        <li><b>Cluster 1 (33 OAs): </b>Educated, Economically Active Professionals</li>
+        <li><b>Cluster 2 (17 OAs):</b> Young, Student-Dominated Areas</li>
+        <li><b>Cluster 3 (43 OAs):</b> Older Retirees, Less Economically Active</li>
+        <li><b>Cluster 4 (46 OAs):</b> Working Families</li>
+        <li><b>Cluster 5 (46 OAs): </b>Areas of Higher Deprivation</li>
+        <li><b>Cluster 6 (86 OAs):</b> High Performing Professionals</li>
+        <li><b>Cluster 7 (112 OAs):</b> Areas of Older, More Stable, and high UK-Born Population</li>
+      </ul>
+        
+       <h2>3. Comparative Demographic Metrics</h2>
+<p>Use the search box below to filter the metrics you wish to compare (e.g., "Health", "Deprivation", "Retired").</p>
+
+<div style="margin-bottom: 20px;">
+    <input type="text" id="metricFilter" onkeyup="filterMetrics()" placeholder="Filter metrics..." style="padding: 10px; width: 300px; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem;">
+</div>
+
+<div style="overflow-x: auto; border: 1px solid #e0e0e0; border-radius: 8px; background-color: #fdfdff;">
+    <table id="comparisonTable" style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr style="background-color: #DBE1FF; color: white;">
+                <th style="padding: 12px; text-align: left; border-right: 1px solid #fff;">Metric</th>
+                <th style="padding: 12px; text-align: center;">Cluster 1: Professionals </th>
+                <th style="padding: 12px; text-align: center;">Cluster 2: Students</th>
+                <th style="padding: 12px; text-align: center;">Cluster 3: Retirees</th>
+                <th style="padding: 12px; text-align: center;">Cluster 4: Working Families</th>
+                <th style="padding: 12px; text-align: center;">Cluster 5: Disadvantaged Areas</th>
+                <th style="padding: 12px; text-align: center;">Cluster 6: High Performers</th>
+                <th style="padding: 12px; text-align: center;">Cluster 7: Established Residents</th>
+            </tr>
+        </thead>
+        <tbody>
+            </tbody>
+    </table>
+</div> 
+      
+      <h3>Demographic Composition Heatmap</h3>
+      <p>The following heatmap displays the key demographic differences between the 7 clusters, highlighting variables such as qualifications, health, economic activity, and deprivation levels.</p>
+      
+      <!-- Placeholder image for the heatmap -->
+      <img src="images/Overview.jpg" alt="Heatmap showing demographic differences between the 7 clusters." width="100%"> 
+      
+      
+      <!-- DETAILED CLUSTER PROFILES -->
+      <h2>3. Detailed Cluster Profiles</h2>
+      
+      <div id="cluster-detail-1" class="cluster-card">
+        <h3>Cluster 1: Educated, Economically Active Professionals</h3> 
+       <p> This segment represents middle-aged, well-educated urban professionals with <b>high levels of economic activity (60.2%) and qualifications (54.0% Level 4+)</b>. They report very good health (87.0%) and high stability, primarily working in AB/C1 occupations.</p>
+       
+        <ul>
+          <li>High qualifications (54%) and strong economic activity (60%).</li>
+          <li>Very good health (87%) and low deprivation (61%).</li>
+          <li>High AB/C1 professionals (80% combined).</li>
+          <li>Moderate student (10.9%) and low DE class (9.7%).</li> 
+        </ul>
+      </div>
+
+      <div id="cluster-detail-2" class="cluster-card">
+        <h3>Cluster 2: Young, Student-Dominated Areas</h3>
+        <p> Defined by <b>high population turnover and youth</b>, this cluster has the highest concentration of economically inactive students (37.2%) and young adults aged 15-24. These are shared accommodations, often near the University, characterized by a lower rate of one-person households</p>
+        <ul>
+          <li>Lowest education (22.8%), but highest students (37%).</li>
+          <li>Young (15–24 years = 50%), healthy (85.5%)</li>
+          <li>Low economic activity (33.7%)</li>
+        </ul>
+      </div>
+
+      <div id="cluster-detail-3" class="cluster-card">
+        <h3>Cluster 3: Older Retirees, Less Economically Active</h3>
+        <p> These are the areas with <b>a high incidence of retirees</b>, with 40.4% economically inactive retirees and the oldest age profile (highest proportion of 70+ and 85+ residents). They report lower health outcomes and a moderate need for care (8.2 hours/week).</p>
+         <ul>
+          <li>High proportions aged 65+ (≈35%), moderate deprivation</li>
+          <li> Second lowest reported health (78.6%), low students (3%)</li>
+        </ul>
+      </div>
+
+      <div id="cluster-detail-4" class="cluster-card">
+        <h3>Cluster 4: Working Families</h3>
+        <p>A segment of<b> highly economically active individuals with children, </b> evidenced by the highest rate of single family households (70.7%) and young children (8.6% under 4). The residents are typically non-AB professionals, highly engaged in the workforce (75.2% active).</p>
+        <ul>
+          <li>High education (44%) and very high economic activity (75%)</li>
+          <li>Excellent health (90%), low deprivation (65%)</li>
+          <li>Strong family demographic (70% single family households)</li>
+        </ul>
+      </div>
+
+      <div id="cluster-detail-5" class="cluster-card">
+        <h3>Cluster 5: Areas of Higher Deprivation</h3>
+        <p> These are small, deprived pockets with <b>the lowest socio-economic indicators</b>, including the highest rate of 2-4 dimensions of deprivation (25.4%). This segment has the highest proportion of lone-parent families (13.8%) and a higher concentration of DE class occupations (27.7%).</p>
+        <ul>
+          <li>Lower education (27.9%) and highest deprivation (25%).</li>
+          <li>Higher long-term sickness (6.2%) and lowest reported healthiness (78%)</li>
+          <li>Moderate retirees and low professionals</li>
+        </ul>
+      </div>
+
+      <div id="cluster-detail-6" class="cluster-card">
+        <h3>Cluster 6: High Performing Professionals</h3>
+        <p>The <b>most affluent and highly qualified segment</b>, dominated by AB Professional occupations (60.5%) and degree-level qualifications (59.7%). They boast the highest reported health and 0 dimension deprivation rates.</p>
+        <ul>
+          <li>Highest education (59.7%), A/B class professionals (60%), excellent health (90%).</li>
+          <li>Low deprivation (68%), low sickness (0.9%), retirees 28%.</li>
+        </ul>
+      </div>
+
+      <div id="cluster-detail-7" class="cluster-card">
+        <h3>Cluster 7: Older, More Stable, and high UK-Born Population</h3>
+        <p> A stable, long-established segment with the highest percentage of UK-born residents (92.9%) and a high proportion of retired individuals (28.3%). These communities are characterized by strong local ties, providing the highest volume of unpaid care (8.9 hours/week).</p>
+        <ul>
+          <li>Good education (44%), healthy (87%), high % UK-born (93%)</li>
+          <li>Many retirees (28%), low deprivation</li>
+        </ul>
+      </div>
+      
+      <p style="margin-top: 40px; font-style: italic; color: #666; border-top: 1px solid #ddd; padding-top: 20px;">
+        Data Source: UK Office for National Statistics, 2021 Census Output Area Data. Created by Felix Lunn.
+      </p>
+
+    </div>
+
+    <!-- QGIS2WEB REQUIRED JS SCRIPTS -->
+    <script src="resources/qgis2web_expressions.js"></script>
+    <script src="./resources/functions.js"></script>
+    <script src="./resources/ol.js"></script>
+    <script src="./resources/ol-layerswitcher.js"></script>
+    <script src="resources/photon-geocoder-autocomplete.min.js"></script>
+    <script src="layers/Clusters_1.js"></script>
+    <script src="styles/Clusters_1_style.js"></script>
+    <script src="./layers/layers.js" type="text/javascript"></script> 
+    <script src="./resources/Autolinker.min.js"></script>
+    <script src="./resources/qgis2web.js"></script>
+
+    <!-- Custom JavaScript for Map and Chart Initialization -->
+    <script>
+      let mapInitialized = false;
+
+      function loadClusterChart() {
+          const ctx = document.getElementById('clusterBarChart').getContext('2d');
+          
+          const clusterLabels = [
+              'C1: Professionals', 'C2: Students', 'C3: Older Retirees', 
+              'C4: Working Families', 'C5: Disadvantaged Areas', 'C6: High Performers', 
+              'C7: Established Residents'
+          ];
+          const oaCounts = [33, 17, 43, 46, 46, 86, 112];
+          
+          // Using a standard ColorBrewer palette for visual consistency,
+          // assuming this is similar to the QGIS map export colors.
+          const mapColors = [
+              '#F00707', // Cluster 1: Educated, Active Professionals
+              '#07F0E8', // Cluster 2: Young, Student-Dominated Areas
+              '#135E08', // Cluster 3: Older Retirees
+              '#b2df8a', // Cluster 4: Working Families
+              '#ED07ED', // Cluster 5: Areas of Higher Deprivation (Often Red)
+              '#FAFA07', // Cluster 6: High Performing Professionals
+              '#3C57DE'  // Cluster 7: Established Residents
+          ];
+
+          new Chart(ctx, {
+              type: 'bar',
+              data: {
+                  labels: clusterLabels,
+                  datasets: [{
+                      label: 'Output Area (OA) Count',
+                      data: oaCounts,
+                      backgroundColor: mapColors,
+                      // Keeping the border the same color as the fill
+                      borderColor: mapColors, 
+                      borderWidth: 1
+                  }]
+              },
+              options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  indexAxis: 'y', // Horizontal bars for better label reading
+                  plugins: {
+                      legend: {
+                          display: false // Legend not needed for a single dataset
+                      },
+                      title: {
+                          display: true,
+                          text: 'Geographical Size of Clusters (Output Areas)',
+                          font: {
+                              size: 16
+                          }
+                      }
+                  },
+                  scales: {
+                      x: {
+                          title: {
+                              display: true,
+                              text: 'Number of Output Areas (OAs)'
+                          },
+                          beginAtZero: true
+                      },
+                      y: {
+                          title: {
+                              display: true,
+                              text: 'Cluster'
+                          }
+                      }
+                  }
+              }
+          });
+      }
+
+      function loadPageAndMap() {
+        if (mapInitialized) {
+            if (window.map) {
+                window.map.updateSize();
+            }
+            return;
+        }
+        
+        // This relies on the global map object created by qgis2web.js
+        setTimeout(() => {
+            if (window.map) {
+                window.map.updateSize();
+            }
+            mapInitialized = true;
+        }, 150);
+
+        // Initialize the Chart
+        loadClusterChart();
+      }
+
+      // Initialize the map and chart once the page content and scripts are loaded.
+      window.onload = loadPageAndMap;
+      
+      
+      
+    const clusterData = {
+    "Level 4 qualifications or above": [54.0, 22.8, 43.4, 44.2, 27.9, 59.7, 44.3],
+    "VG/G Health reported": [87.0, 85.5, 78.6, 90.0, 78.5, 90.2, 86.8],
+    "0 dimension deprivation": [61.0, 47.9, 52.0, 65.4, 38.5, 67.7, 59.9],
+    "2-4 dimensions of deprivation": [10.5, 16.6, 13.9, 8.6, 25.4, 5.4, 9.4],
+    "Economically active (excluding full-time students)": [60.2, 33.7, 46.9, 75.2, 56.0, 58.8, 59.4],
+    "Economically inactive: Retired": [15.4, 9.1, 40.4, 10.1, 18.6, 27.8, 28.3],
+    "Economically inactive: Student": [10.9, 37.2, 3.0, 4.0, 6.8, 4.9, 3.5],
+    "Economically inactive: Long-term sick or disabled": [2.5, 2.2, 3.5, 2.1, 6.2, 0.9, 1.5],
+    "Hours of Unpaid Care Provided per Week": [6.2, 6.1, 8.2, 6.0, 8.5, 7.6, 8.9],
+    "A/B Professional": [45.2, 24.4, 40.9, 31.9, 21.2, 60.5, 40.1],
+    "C1 Professional": [35.4, 42.4, 30.9, 37.7, 30.5, 27.4, 32.3],
+    "C2 Professional": [9.8, 15.6, 15.8, 19.5, 22.0, 7.8, 17.3],
+    "DE professional": [9.7, 17.6, 11.7, 11.1, 27.7, 4.3, 8.5],
+    "% of UK Born": [79.5, 86.2, 89.8, 86.4, 88.4, 88.8, 92.9],
+    "One-person household": [39.0, 23.5, 39.9, 24.6, 33.0, 20.9, 23.5],
+    "Single family household": [53.0, 55.3, 56.3, 70.7, 58.9, 74.8, 71.9],
+    "Single family household: Lone parent family": [5.9, 10.7, 5.4, 10.8, 13.8, 5.0, 6.5]
+};
+
+function loadComparisonTable() {
+    const tbody = document.querySelector('#comparisonTable tbody');
+    tbody.innerHTML = ''; // Clear previous data
+    const clusterKeys = Object.keys(clusterData);
+    
+    // Function to apply background color based on value for quick visual scanning
+    function getBackgroundColor(value, metric) {
+        // Simple logic: Highlight high/low values for key metrics
+        if (metric.includes('deprivation') || metric.includes('sick')) {
+            // Lower is better, highlight higher values (red/orange)
+            if (value >= 20 || (metric.includes('sick') && value >= 5)) return 'background-color: #f4d0d0;'; // Light Red
+            if (value >= 10) return 'background-color: #f9e2d0;'; // Light Orange
+        } else if (metric.includes('Health') || metric.includes('Level 4') || metric.includes('Professional')) {
+            // Higher is better, highlight higher values (green/blue)
+            if (value >= 55) return 'background-color: #d0f4d0;'; // Light Green
+            if (value >= 40) return 'background-color: #d0e8f4;'; // Light Blue
+        } else if (metric.includes('Retired')) {
+             if (value >= 35) return 'background-color: #f7e0f9;'; // Light Purple for age/retirement
+        }
+        return '';
+    }
+
+    for (const metric in clusterData) {
+        const row = tbody.insertRow();
+        
+        // 1. Metric Name Cell
+        let metricCell = row.insertCell();
+        metricCell.innerHTML = `<strong>${metric}</strong>`;
+        metricCell.style.padding = '10px 12px';
+        metricCell.style.textAlign = 'left';
+        metricCell.style.borderRight = '1px solid #e0e0e0';
+
+        // 2. Data Cells (7 clusters)
+        clusterData[metric].forEach( (value, index) => {
+            const cell = row.insertCell();
+            cell.innerText = value.toFixed(1) + '%';
+            cell.style.textAlign = 'center';
+            cell.style.padding = '10px 8px';
+            cell.style.borderLeft = '1px solid #e0e0e0';
+            cell.style.cssText += getBackgroundColor(value, metric); // Add highlight
+            
+            // Special case for non-percentage data
+            if (metric.includes('Hours of Unpaid Care')) {
+                 cell.innerText = value.toFixed(1) + ' hrs';
+            }
+        });
+    }
+}
+
+function filterMetrics() {
+    const input = document.getElementById("metricFilter");
+    const filter = input.value.toUpperCase();
+    const table = document.getElementById("comparisonTable");
+    const tr = table.getElementsByTagName("tr");
+
+    for (let i = 1; i < tr.length; i++) { // Start from 1 to skip the header row
+        const td = tr[i].getElementsByTagName("td")[0]; // Metric name is in the first column
+        if (td) {
+            const txtValue = td.textContent || td.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                tr[i].style.display = "";
+            } else {
+                tr[i].style.display = "none";
+            }
+        }       
+    }
+}
+
+// Ensure the table is loaded after the content
+window.addEventListener('load', () => {
+    // This runs after your qgis2web init functions
+    if (document.getElementById('comparisonTable')) {
+        loadComparisonTable();
+    }
+    // Re-initialize map and chart if needed (optional, just ensuring everything loads)
+    loadPageAndMap();
+});
+
+    </script>
+  </body>
+</html>
