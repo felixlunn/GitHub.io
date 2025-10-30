@@ -766,7 +766,7 @@ function fnc_project_color(values, context) {
 
 
 
-function exp_2019GEEstimate_7rule0_eval_expression(context) {
+function exp_2019GEEstimate_12rule0_eval_expression(context) {
     // "Estimated 2019 GE Vote" IS NULL
 
     var feature = context.feature;
@@ -779,7 +779,7 @@ function exp_2019GEEstimate_7rule0_eval_expression(context) {
 }
 
 
-function exp_2019GEEstimate_7rule1_eval_expression(context) {
+function exp_2019GEEstimate_12rule1_eval_expression(context) {
     // "Estimated 2019 GE Vote" = 'CON'
 
     var feature = context.feature;
@@ -792,7 +792,7 @@ function exp_2019GEEstimate_7rule1_eval_expression(context) {
 }
 
 
-function exp_2024GEEstimate_8rule0_eval_expression(context) {
+function exp_2024GEEstimate_13rule0_eval_expression(context) {
     // "Estimated 2024 GE Vote" IS NULL
 
     var feature = context.feature;
@@ -805,7 +805,7 @@ function exp_2024GEEstimate_8rule0_eval_expression(context) {
 }
 
 
-function exp_2024GEEstimate_8rule1_eval_expression(context) {
+function exp_2024GEEstimate_13rule1_eval_expression(context) {
     // "Estimated 2024 GE Vote" = 'CON'
 
     var feature = context.feature;
@@ -818,7 +818,7 @@ function exp_2024GEEstimate_8rule1_eval_expression(context) {
 }
 
 
-function exp_EconomicOutlook_9rule0_eval_expression(context) {
+function exp_EconomicOutlook_14rule0_eval_expression(context) {
     // "Economic Outlook" = 'SRW'
 
     var feature = context.feature;
@@ -831,7 +831,7 @@ function exp_EconomicOutlook_9rule0_eval_expression(context) {
 }
 
 
-function exp_EconomicOutlook_9rule1_eval_expression(context) {
+function exp_EconomicOutlook_14rule1_eval_expression(context) {
     // "Economic Outlook" = 'RIW'
 
     var feature = context.feature;
@@ -844,7 +844,7 @@ function exp_EconomicOutlook_9rule1_eval_expression(context) {
 }
 
 
-function exp_EconomicOutlook_9rule2_eval_expression(context) {
+function exp_EconomicOutlook_14rule2_eval_expression(context) {
     // "Economic Outlook" = 'CEN'
 
     var feature = context.feature;
@@ -857,7 +857,7 @@ function exp_EconomicOutlook_9rule2_eval_expression(context) {
 }
 
 
-function exp_EconomicOutlook_9rule3_eval_expression(context) {
+function exp_EconomicOutlook_14rule3_eval_expression(context) {
     // "Economic Outlook" = 'LEF'
 
     var feature = context.feature;
@@ -870,7 +870,7 @@ function exp_EconomicOutlook_9rule3_eval_expression(context) {
 }
 
 
-function exp_EconomicOutlook_9rule4_eval_expression(context) {
+function exp_EconomicOutlook_14rule4_eval_expression(context) {
     // "Economic Outlook" = 'SLW'
 
     var feature = context.feature;
@@ -883,7 +883,7 @@ function exp_EconomicOutlook_9rule4_eval_expression(context) {
 }
 
 
-function exp_Clusters_10rule0_eval_expression(context) {
+function exp_Clusters_15rule0_eval_expression(context) {
     // Clusters_Cluster_7 = 0
 
     var feature = context.feature;
@@ -896,7 +896,7 @@ function exp_Clusters_10rule0_eval_expression(context) {
 }
 
 
-function exp_Clusters_10rule1_eval_expression(context) {
+function exp_Clusters_15rule1_eval_expression(context) {
     // Clusters_Cluster_7 = 1
 
     var feature = context.feature;
@@ -909,7 +909,7 @@ function exp_Clusters_10rule1_eval_expression(context) {
 }
 
 
-function exp_Clusters_10rule2_eval_expression(context) {
+function exp_Clusters_15rule2_eval_expression(context) {
     // Clusters_Cluster_7 = 2
 
     var feature = context.feature;
@@ -922,7 +922,7 @@ function exp_Clusters_10rule2_eval_expression(context) {
 }
 
 
-function exp_Clusters_10rule3_eval_expression(context) {
+function exp_Clusters_15rule3_eval_expression(context) {
     // Clusters_Cluster_7 = 3
 
     var feature = context.feature;
@@ -935,7 +935,7 @@ function exp_Clusters_10rule3_eval_expression(context) {
 }
 
 
-function exp_Clusters_10rule4_eval_expression(context) {
+function exp_Clusters_15rule4_eval_expression(context) {
     // Clusters_Cluster_7 = 4
 
     var feature = context.feature;
@@ -948,7 +948,7 @@ function exp_Clusters_10rule4_eval_expression(context) {
 }
 
 
-function exp_Clusters_10rule5_eval_expression(context) {
+function exp_Clusters_15rule5_eval_expression(context) {
     // Clusters_Cluster_7 = 5
 
     var feature = context.feature;
@@ -961,7 +961,7 @@ function exp_Clusters_10rule5_eval_expression(context) {
 }
 
 
-function exp_Clusters_10rule6_eval_expression(context) {
+function exp_Clusters_15rule6_eval_expression(context) {
     // Clusters_Cluster_7 = 6
 
     var feature = context.feature;
