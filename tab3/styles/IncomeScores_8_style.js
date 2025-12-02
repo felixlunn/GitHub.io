@@ -1,0 +1,61 @@
+var size = 0;
+var placement = 'point';
+
+var style_IncomeScores_8 = function(feature, resolution){
+    var context = {
+        feature: feature,
+        variables: {}
+    };
+    
+    var labelText = ""; 
+    var value = feature.get("Deprivation — IoD2019 Scores_Income Score (rate)");
+    var labelFont = "10px, sans-serif";
+    var labelFill = "#000000";
+    var bufferColor = "";
+    var bufferWidth = 0;
+    var textAlign = "left";
+    var offsetX = 0;
+    var offsetY = 0;
+    var placement = 'point';
+    if ("" !== null) {
+        labelText = String("");
+    }
+    if (value >= 0.013000 && value <= 0.044600) {
+            style = [ new ol.style.Style({
+        stroke: new ol.style.Stroke({color: 'rgba(56,128,54,0.324)', lineDash: null, lineCap: 'butt', lineJoin: 'miter', width: 0.988}),fill: new ol.style.Fill({color: 'rgba(222,245,229,0.324)'}),
+        text: createTextStyle(feature, resolution, labelText, labelFont,
+                              labelFill, placement, bufferColor,
+                              bufferWidth)
+    })]
+                    } else if (value >= 0.044600 && value <= 0.076200) {
+            style = [ new ol.style.Style({
+        stroke: new ol.style.Stroke({color: 'rgba(56,128,54,0.324)', lineDash: null, lineCap: 'butt', lineJoin: 'miter', width: 0.988}),fill: new ol.style.Fill({color: 'rgba(75,194,173,0.324)'}),
+        text: createTextStyle(feature, resolution, labelText, labelFont,
+                              labelFill, placement, bufferColor,
+                              bufferWidth)
+    })]
+                    } else if (value >= 0.076200 && value <= 0.107800) {
+            style = [ new ol.style.Style({
+        stroke: new ol.style.Stroke({color: 'rgba(56,128,54,0.324)', lineDash: null, lineCap: 'butt', lineJoin: 'miter', width: 0.988}),fill: new ol.style.Fill({color: 'rgba(53,123,163,0.324)'}),
+        text: createTextStyle(feature, resolution, labelText, labelFont,
+                              labelFill, placement, bufferColor,
+                              bufferWidth)
+    })]
+                    } else if (value >= 0.107800 && value <= 0.139400) {
+            style = [ new ol.style.Style({
+        stroke: new ol.style.Stroke({color: 'rgba(56,128,54,0.324)', lineDash: null, lineCap: 'butt', lineJoin: 'miter', width: 0.988}),fill: new ol.style.Fill({color: 'rgba(62,53,107,0.324)'}),
+        text: createTextStyle(feature, resolution, labelText, labelFont,
+                              labelFill, placement, bufferColor,
+                              bufferWidth)
+    })]
+                    } else if (value >= 0.139400 && value <= 0.171000) {
+            style = [ new ol.style.Style({
+        stroke: new ol.style.Stroke({color: 'rgba(56,128,54,0.324)', lineDash: null, lineCap: 'butt', lineJoin: 'miter', width: 0.988}),fill: new ol.style.Fill({color: 'rgba(11,4,5,0.324)'}),
+        text: createTextStyle(feature, resolution, labelText, labelFont,
+                              labelFill, placement, bufferColor,
+                              bufferWidth)
+    })]
+                    };
+
+    return style;
+};

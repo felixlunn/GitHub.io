@@ -1,0 +1,1232 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Multi Score Deprivation Map</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.css">
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.js"></script>
+
+    <link rel="stylesheet" href="./resources/ol.css">
+    <link rel="stylesheet" href="resources/fontawesome-all.min.css">
+    <link href="resources/photon-geocoder-autocomplete.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./resources/ol-layerswitcher.css">
+    <link rel="stylesheet" href="./resources/qgis2web.css">
+
+<style>
+    /* --- Global & Typography Styles --- */
+    body {
+        font-family: 'Inter', Arial, sans-serif;
+        line-height: 1.6;
+        background-color: #f4f7f9; /* Light grey background */
+        color: #333;
+        margin: 0;
+        padding: 0;
+    }
+
+    .report-container {
+        max-width: 1000px;
+        margin: 40px auto;
+        padding: 30px;
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    h1 {
+        color: #1a237e; /* Deep Blue/Navy Title */
+        font-size: 2.5rem;
+        font-weight: 700;
+        border-bottom: 3px solid #e0e0e0;
+        padding-bottom: 15px;
+        margin-bottom: 20px;
+    }
+
+    h2 {
+        color: #3949ab;
+        font-size: 1.75rem;
+        font-weight: 600;
+        margin-top: 40px;
+        margin-bottom: 15px;
+    }
+
+    p {
+        font-size: 1.2rem;
+        margin-bottom: 15px;
+    }
+
+    /* --- QGIS2WEB Control Styles --- */
+    .ol-control > * {
+        background-color: #f8f8f8 !important;
+        color: #444444 !important;
+        border-radius: 0px;
+    }
+
+    .ol-attribution a,
+    .gcd-gl-input::placeholder,
+    .search-layer-input-search::placeholder {
+        color: #444444 !important;
+    }
+
+    .search-layer-input-search {
+        background-color: #f8f8f8 !important;
+    }
+
+    .ol-control > *:focus,
+    .ol-control > *:hover {
+        background-color: rgba(248, 248, 248, 0.7) !important;
+    }
+
+    .ol-control {
+        background-color: rgba(255, 255, 255, .4) !important;
+        padding: 2px !important;
+    }
+
+    /* --- Map Styling --- */
+    #map {
+        width: 100%;
+        height: 550px;
+        margin: 30px 0;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    /* --- Modern Sophisticated Navbar (Desktop) --- */
+    .navbar {
+        width: 100%;
+        background: white;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        position: sticky;
+        top: 0;
+        z-index: 2000;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .nav-container {
+        max-width: 1200px;
+        margin: auto;
+        padding: 0 25px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 65px;
+    }
+
+    .nav-logo {
+        color: black;
+        font-size: 1.4rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+
+    .nav-links {
+        list-style: none;
+        display: flex;
+        gap: 25px;
+        margin: 0; /* Ensures proper desktop layout */
+        padding: 0; /* Ensures proper desktop layout */
+    }
+
+    .nav-links li a {
+        text-decoration: none;
+        color: black;
+        font-size: 1.05rem;
+        font-weight: 500;
+        padding: 8px 12px;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+    }
+
+    .nav-links li a:hover {
+        background: rgba(255, 255, 255, 0.12);
+        color: black;
+    }
+
+    .nav-links .active {
+        background: orange;
+        color: black;
+    }
+
+    /* Hamburger Icon (Desktop: Hidden) */
+    .nav-toggle {
+        display: none;
+        flex-direction: column;
+        justify-content: space-around;
+        align-items: center;
+        cursor: pointer;
+        width: 30px;
+        height: 30px;
+        cursor: pointer;
+        background: #1a237e; /* Added background for visibility */
+        border-radius: 4px;
+        padding: 4px;
+        box-sizing: border-box;
+    }
+    }
+
+    .nav-toggle span {
+        width: 26px;
+        height: 3px;
+        background: white; /* Changed to match primary color */
+        border-radius: 2px;
+    }
+
+    /* ---------------------------------- */
+    /* --- Mobile Viewport Styles (Active below 800px) --- */
+    /* ---------------------------------- */
+    @media (max-width: 800px) {
+        .nav-container {
+            padding: 0 20px;
+        }
+
+        /* Show Hamburger Icon */
+        .nav-toggle {
+            display: flex;
+        }
+
+        /* Hide desktop links by default and restyle for mobile */
+        .nav-links {
+            position: absolute;
+            top: 65px;
+            left: 0;
+            width: 100%;
+            flex-direction: column;
+            background:white; /* Deep Blue background for mobile menu */
+            display: none; /* Hides the menu by default on mobile */
+            padding: 10px 0;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        /* *** CRITICAL FIX: SHOW THE MENU WHEN 'open' CLASS IS PRESENT *** */
+        .nav-links.open {
+            display: flex; /* This is toggled by JavaScript to show the menu */
+        }
+
+        /* Mobile link list item styling */
+        .nav-links li {
+            text-align: center;
+            padding: 5px 0;
+        }
+
+        /* Mobile link text style */
+        .nav-links li a {
+            color: black;
+            display: block; /* Makes links full width for easy tapping */
+        }
+
+        .nav-links li a:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+    }
+
+    /* --- Table Styling --- */
+    .table-responsive-container {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    #imdTable {
+        width: 100% !important;
+        border-collapse: collapse;
+        table-layout: auto;
+    }
+
+    #imdTable thead th {
+        background-color: #3949ab;
+        color: white;
+        font-weight: 600;
+        padding: 10px;
+        text-align: left;
+        white-space: nowrap;
+    }
+
+    #imdTable tbody td {
+        padding: 8px 10px;
+        font-size: 0.9rem;
+        border-bottom: 1px solid #f0f0f0;
+        white-space: nowrap;
+    }
+
+    #imdTable tbody tr:nth-child(even) {
+        background-color: #f7f7f7;
+    }
+
+    #imdTable tbody tr:hover {
+        background-color: #e6e6ff;
+        cursor: default;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        padding: 0.3em 0.6em;
+        margin: 0 2px;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+        background: #ff7e00 !important;
+        border-color: #ff7e00 !important;
+        color: white !important;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover:not(.current) {
+        background: #f0f0f0 !important;
+        border-color: #ddd !important;
+    }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="nav-container">
+        <div class="nav-logo">Winchester Demographics</div>
+        <ul class="nav-links">
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="../Tab2/cluster_details.html">Cluster Breakdown</a></li>
+            <li><a class="active" href="../tab3/deprivation.html">Deprivation Indices</a></li>
+        </ul>
+        <div class="nav-toggle" id="navToggle">
+            <span></span><span></span><span></span>
+        </div>
+    </div>
+</nav>
+
+<div class="report-container">
+    <h1>Deprivation Map</h1>
+    <p>The English Indices of Deprivation (IoD25) measure relative levels of deprivation in 33,755 small areas or neighbourhoods, called Lower-layer Super Output Areas (LSOAs), in England.</p>
+    <p>The IoD25 suite of resources comprises 7 standalone indexes combined to form the Index of Multiple Deprivation 2025 (IMD25).</p>
+    <p>The weightings for the multi-score measure of deprivation are:</p>
+    <ul>
+        <li>Income - 22.5%</li>
+        <li>Employment - 22.5%</li>
+        <li>Education - 13.5%</li>
+        <li>Health - 13.5%</li>
+        <li>Crime - 9.3%</li>
+        <li>Barriers to Housing & Services - 9.3%</li>
+        <li>Living Environment - 9.3%</li>
+    </ul>
+    <p>The map also records the TUNDRA scores at the LSOA level (proportion of 16-year-olds in higher education by 18/19).</p>
+
+    <div id="map">
+        <div id="popup" class="ol-popup">
+            <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+            <div id="popup-content"></div>
+        </div>
+    </div>
+
+    <p style="margin-top: 40px; font-style: italic; color: #666; border-top: 1px solid #ddd; padding-top: 20px;">
+        Data Source: 
+        <a href="https://www.gov.uk/government/statistics/english-indices-of-deprivation-2025/english-indices-of-deprivation-2025-statistical-release">UK Government: English Indices of Deprivation</a> and 
+        <a href="https://www.gov.uk/government/statistics/english-indices-of-deprivation-2025/english-indices-of-deprivation-2025-statistical-release">Office for Students</a>
+    </p>
+</div>
+
+<div class="report-container">
+    <h1>Deprivation Data Table</h1>
+    <p>The English Indices of Deprivation (IoD25) measure relative levels of deprivation across England’s 33,755 LSOAs. The table shows the raw overall scores of Winchester's LSOAs as well as a breakdown of the relative levels of deprivation by each metric.</p>
+    <p>The deciles given reflect each LSOA's specific level of deprivation relative to national levels. The first decile (1) represents the LSOAs that are part of the bottom 10% of relative deprivation</p>
+
+    <div class="table-responsive-container" style="margin-top: 40px;">
+        <h2>Winchester LSOA Deprivation Data</h2>
+
+        <table id="imdTable" class="display compact" style="width:100%">
+            <thead>
+                <tr>
+                    <th>LSOA Name</th>
+                    <th>IMD Score</th>
+                    <th>IMD Decile (1=Most Deprived)</th>
+                    <th>Income Decile</th>
+                    <th>Employment Decile</th>
+                    <th>Education Decile</th>
+                    <th>Health Decile</th>
+                    <th>Crime Decile</th>
+                    <th>Housing/Services Decile</th>
+                    <th>Living Env. Decile</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+   $(document).ready(function() {
+    // If already initialized, destroy first
+    if ($.fn.DataTable.isDataTable('#imdTable')) {
+        $('#imdTable').DataTable().destroy();
+    }
+
+    $('#imdTable').DataTable({
+        data: winchesterData.map(obj => Object.values(obj)),
+        columns: [
+            { title: "LSOA Name", width: "auto" },
+            { title: "IMD Score", width: "1%", className: "dt-center" },
+            { title: "IMD Decile", width: "1%", className: "dt-center" },
+            { title: "Income Decile", width: "1%", className: "dt-center" },
+            { title: "Employment Decile", width: "1%", className: "dt-center" },
+            { title: "Education Decile", width: "1%", className: "dt-center" },
+            { title: "Health Decile", width: "1%", className: "dt-center" },
+            { title: "Crime Decile", width: "1%", className: "dt-center" },
+            { title: "Housing/Services Decile", width: "1%", className: "dt-center" },
+            { title: "Living Env. Decile", width: "1%", className: "dt-center" }
+        ],
+        paging: true,
+        searching: true,
+        info: true,
+        order: [[1, 'asc']],
+        scrollX: false,
+        autoWidth: true
+    });
+});
+
+
+    // Dynamic table font resizing
+    function resizeTableFont() {
+        const tableContainer = document.querySelector('.table-responsive-container');
+        const table = document.querySelector('#imdTable');
+        if (!tableContainer || !table) return;
+
+        let containerWidth = tableContainer.offsetWidth;
+        let fontSize = 16; // start with 16px
+        table.style.fontSize = fontSize + 'px';
+
+        while (table.scrollWidth > containerWidth && fontSize > 8) {
+            fontSize -= 0.5;
+            table.style.fontSize = fontSize + 'px';
+        }
+    }
+
+    window.addEventListener('load', resizeTableFont);
+    window.addEventListener('resize', () => {
+        $('#imdTable').DataTable().draw(false);
+        resizeTableFont();
+    });
+
+    // Mobile nav toggle
+    const navToggle = document.getElementById('navToggle');
+    const navLinks = document.querySelector('.nav-links');
+    navToggle.addEventListener('click', () => {
+        navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+    });
+</script>
+
+<!-- Your winchesterData array and other scripts should be included here -->
+<script>
+    const winchesterData = [
+    
+        {
+            "LSOA Name":"Winchester 006C",
+            "IMD Score":28.9,
+            "IMD Decile (1=Most Deprived)":3,
+            "Income Decile":3,
+            "Employment Decile":3,
+            "Education Decile":2,
+            "Health Decile":4,
+            "Crime Decile":5,
+            "Housing and Services Decile":4,
+            "Living Environment Decile":5
+        },
+        {
+            "LSOA Name":"Winchester 006A",
+            "IMD Score":22.23,
+            "IMD Decile (1=Most Deprived)":4,
+            "Income Decile":3,
+            "Employment Decile":4,
+            "Education Decile":9,
+            "Health Decile":5,
+            "Crime Decile":2,
+            "Housing and Services Decile":6,
+            "Living Environment Decile":5
+        },
+        {
+            "LSOA Name":"Winchester 008A",
+            "IMD Score":26.24,
+            "IMD Decile (1=Most Deprived)":4,
+            "Income Decile":4,
+            "Employment Decile":5,
+            "Education Decile":1,
+            "Health Decile":4,
+            "Crime Decile":7,
+            "Housing and Services Decile":2,
+            "Living Environment Decile":8
+        },
+        {
+            "LSOA Name":"Winchester 008B",
+            "IMD Score":25.97,
+            "IMD Decile (1=Most Deprived)":4,
+            "Income Decile":4,
+            "Employment Decile":5,
+            "Education Decile":1,
+            "Health Decile":4,
+            "Crime Decile":4,
+            "Housing and Services Decile":3,
+            "Living Environment Decile":9
+        },
+        {
+            "LSOA Name":"Winchester 006E",
+            "IMD Score":19.82,
+            "IMD Decile (1=Most Deprived)":5,
+            "Income Decile":6,
+            "Employment Decile":5,
+            "Education Decile":2,
+            "Health Decile":7,
+            "Crime Decile":6,
+            "Housing and Services Decile":2,
+            "Living Environment Decile":5
+        },
+        {
+            "LSOA Name":"Winchester 001C",
+            "IMD Score":18.84,
+            "IMD Decile (1=Most Deprived)":5,
+            "Income Decile":8,
+            "Employment Decile":10,
+            "Education Decile":8,
+            "Health Decile":10,
+            "Crime Decile":5,
+            "Housing and Services Decile":1,
+            "Living Environment Decile":1
+        },
+        {
+            "LSOA Name":"Winchester 013E",
+            "IMD Score":20.24,
+            "IMD Decile (1=Most Deprived)":5,
+            "Income Decile":5,
+            "Employment Decile":4,
+            "Education Decile":2,
+            "Health Decile":7,
+            "Crime Decile":4,
+            "Housing and Services Decile":8,
+            "Living Environment Decile":4
+        },
+        {
+            "LSOA Name":"Winchester 008C",
+            "IMD Score":21.12,
+            "IMD Decile (1=Most Deprived)":5,
+            "Income Decile":6,
+            "Employment Decile":8,
+            "Education Decile":2,
+            "Health Decile":4,
+            "Crime Decile":7,
+            "Housing and Services Decile":1,
+            "Living Environment Decile":9
+        },
+        {
+            "LSOA Name":"Winchester 005C",
+            "IMD Score":15.03,
+            "IMD Decile (1=Most Deprived)":6,
+            "Income Decile":5,
+            "Employment Decile":5,
+            "Education Decile":5,
+            "Health Decile":6,
+            "Crime Decile":7,
+            "Housing and Services Decile":9,
+            "Living Environment Decile":7
+        },
+        {
+            "LSOA Name":"Winchester 002A",
+            "IMD Score":16.24,
+            "IMD Decile (1=Most Deprived)":6,
+            "Income Decile":10,
+            "Employment Decile":10,
+            "Education Decile":9,
+            "Health Decile":10,
+            "Crime Decile":4,
+            "Housing and Services Decile":1,
+            "Living Environment Decile":1
+        },
+        {
+            "LSOA Name":"Winchester 002B",
+            "IMD Score":17.42,
+            "IMD Decile (1=Most Deprived)":6,
+            "Income Decile":5,
+            "Employment Decile":4,
+            "Education Decile":4,
+            "Health Decile":7,
+            "Crime Decile":8,
+            "Housing and Services Decile":4,
+            "Living Environment Decile":9
+        },
+        {
+            "LSOA Name":"Winchester 007A",
+            "IMD Score":13.88,
+            "IMD Decile (1=Most Deprived)":7,
+            "Income Decile":6,
+            "Employment Decile":5,
+            "Education Decile":10,
+            "Health Decile":7,
+            "Crime Decile":4,
+            "Housing and Services Decile":5,
+            "Living Environment Decile":4
+        },
+        {
+            "LSOA Name":"Winchester 004A",
+            "IMD Score":14.21,
+            "IMD Decile (1=Most Deprived)":7,
+            "Income Decile":9,
+            "Employment Decile":10,
+            "Education Decile":9,
+            "Health Decile":10,
+            "Crime Decile":7,
+            "Housing and Services Decile":1,
+            "Living Environment Decile":1
+        },
+        {
+            "LSOA Name":"Winchester 011A",
+            "IMD Score":11.99,
+            "IMD Decile (1=Most Deprived)":7,
+            "Income Decile":8,
+            "Employment Decile":8,
+            "Education Decile":9,
+            "Health Decile":10,
+            "Crime Decile":6,
+            "Housing and Services Decile":4,
+            "Living Environment Decile":1
+        },
+        {
+            "LSOA Name":"Winchester 012B",
+            "IMD Score":12.02,
+            "IMD Decile (1=Most Deprived)":7,
+            "Income Decile":6,
+            "Employment Decile":5,
+            "Education Decile":7,
+            "Health Decile":8,
+            "Crime Decile":6,
+            "Housing and Services Decile":8,
+            "Living Environment Decile":7
+        },
+        {
+            "LSOA Name":"Winchester 012D",
+            "IMD Score":13.2,
+            "IMD Decile (1=Most Deprived)":7,
+            "Income Decile":5,
+            "Employment Decile":6,
+            "Education Decile":4,
+            "Health Decile":8,
+            "Crime Decile":7,
+            "Housing and Services Decile":8,
+            "Living Environment Decile":10
+        },
+        {
+            "LSOA Name":"Winchester 006B",
+            "IMD Score":13.85,
+            "IMD Decile (1=Most Deprived)":7,
+            "Income Decile":6,
+            "Employment Decile":6,
+            "Education Decile":5,
+            "Health Decile":8,
+            "Crime Decile":7,
+            "Housing and Services Decile":4,
+            "Living Environment Decile":6
+        },
+        {
+            "LSOA Name":"Winchester 006D",
+            "IMD Score":13.88,
+            "IMD Decile (1=Most Deprived)":7,
+            "Income Decile":6,
+            "Employment Decile":6,
+            "Education Decile":8,
+            "Health Decile":7,
+            "Crime Decile":4,
+            "Housing and Services Decile":5,
+            "Living Environment Decile":5
+        },
+        {
+            "LSOA Name":"Winchester 013B",
+            "IMD Score":12.88,
+            "IMD Decile (1=Most Deprived)":7,
+            "Income Decile":7,
+            "Employment Decile":8,
+            "Education Decile":7,
+            "Health Decile":9,
+            "Crime Decile":9,
+            "Housing and Services Decile":1,
+            "Living Environment Decile":4
+        },
+        {
+            "LSOA Name":"Winchester 011D",
+            "IMD Score":13.7,
+            "IMD Decile (1=Most Deprived)":7,
+            "Income Decile":10,
+            "Employment Decile":10,
+            "Education Decile":9,
+            "Health Decile":10,
+            "Crime Decile":8,
+            "Housing and Services Decile":1,
+            "Living Environment Decile":1
+        },
+        {
+            "LSOA Name":"Winchester 011E",
+            "IMD Score":11.56,
+            "IMD Decile (1=Most Deprived)":7,
+            "Income Decile":9,
+            "Employment Decile":10,
+            "Education Decile":10,
+            "Health Decile":10,
+            "Crime Decile":4,
+            "Housing and Services Decile":4,
+            "Living Environment Decile":1
+        },
+        {
+            "LSOA Name":"Winchester 004D",
+            "IMD Score":9.95,
+            "IMD Decile (1=Most Deprived)":8,
+            "Income Decile":8,
+            "Employment Decile":9,
+            "Education Decile":8,
+            "Health Decile":9,
+            "Crime Decile":9,
+            "Housing and Services Decile":2,
+            "Living Environment Decile":4
+        },
+        {
+            "LSOA Name":"Winchester 003E",
+            "IMD Score":10.16,
+            "IMD Decile (1=Most Deprived)":8,
+            "Income Decile":9,
+            "Employment Decile":9,
+            "Education Decile":9,
+            "Health Decile":10,
+            "Crime Decile":8,
+            "Housing and Services Decile":1,
+            "Living Environment Decile":3
+        },
+        {
+            "LSOA Name":"Winchester 001A",
+            "IMD Score":10.94,
+            "IMD Decile (1=Most Deprived)":8,
+            "Income Decile":9,
+            "Employment Decile":8,
+            "Education Decile":8,
+            "Health Decile":9,
+            "Crime Decile":7,
+            "Housing and Services Decile":3,
+            "Living Environment Decile":2
+        },
+        {
+            "LSOA Name":"Winchester 014C",
+            "IMD Score":11.09,
+            "IMD Decile (1=Most Deprived)":8,
+            "Income Decile":6,
+            "Employment Decile":7,
+            "Education Decile":7,
+            "Health Decile":10,
+            "Crime Decile":3,
+            "Housing and Services Decile":8,
+            "Living Environment Decile":7
+        },
+        {
+            "LSOA Name":"Winchester 013A",
+            "IMD Score":10.88,
+            "IMD Decile (1=Most Deprived)":8,
+            "Income Decile":8,
+            "Employment Decile":9,
+            "Education Decile":9,
+            "Health Decile":9,
+            "Crime Decile":7,
+            "Housing and Services Decile":2,
+            "Living Environment Decile":4
+        },
+        {
+            "LSOA Name":"Winchester 010E",
+            "IMD Score":9.73,
+            "IMD Decile (1=Most Deprived)":8,
+            "Income Decile":9,
+            "Employment Decile":10,
+            "Education Decile":9,
+            "Health Decile":10,
+            "Crime Decile":10,
+            "Housing and Services Decile":3,
+            "Living Environment Decile":1
+        },
+        {
+            "LSOA Name":"Winchester 005B",
+            "IMD Score":10.52,
+            "IMD Decile (1=Most Deprived)":8,
+            "Income Decile":6,
+            "Employment Decile":5,
+            "Education Decile":9,
+            "Health Decile":8,
+            "Crime Decile":9,
+            "Housing and Services Decile":7,
+            "Living Environment Decile":8
+        },
+        {
+            "LSOA Name":"Winchester 003D",
+            "IMD Score":9.1,
+            "IMD Decile (1=Most Deprived)":8,
+            "Income Decile":8,
+            "Employment Decile":8,
+            "Education Decile":10,
+            "Health Decile":8,
+            "Crime Decile":8,
+            "Housing and Services Decile":2,
+            "Living Environment Decile":9
+        },
+        {
+            "LSOA Name":"Winchester 007B",
+            "IMD Score":7.43,
+            "IMD Decile (1=Most Deprived)":9,
+            "Income Decile":8,
+            "Employment Decile":8,
+            "Education Decile":10,
+            "Health Decile":10,
+            "Crime Decile":6,
+            "Housing and Services Decile":6,
+            "Living Environment Decile":5
+        },
+        {
+            "LSOA Name":"Winchester 009A",
+            "IMD Score":6.85,
+            "IMD Decile (1=Most Deprived)":9,
+            "Income Decile":10,
+            "Employment Decile":10,
+            "Education Decile":10,
+            "Health Decile":10,
+            "Crime Decile":8,
+            "Housing and Services Decile":3,
+            "Living Environment Decile":4
+        },
+        {
+            "LSOA Name":"Winchester 010B",
+            "IMD Score":7.96,
+            "IMD Decile (1=Most Deprived)":9,
+            "Income Decile":7,
+            "Employment Decile":7,
+            "Education Decile":8,
+            "Health Decile":8,
+            "Crime Decile":8,
+            "Housing and Services Decile":7,
+            "Living Environment Decile":7
+        },
+        {
+            "LSOA Name":"Winchester 011B",
+            "IMD Score":7.33,
+            "IMD Decile (1=Most Deprived)":9,
+            "Income Decile":8,
+            "Employment Decile":9,
+            "Education Decile":9,
+            "Health Decile":9,
+            "Crime Decile":6,
+            "Housing and Services Decile":5,
+            "Living Environment Decile":6
+        },
+        {
+            "LSOA Name":"Winchester 004E",
+            "IMD Score":7.68,
+            "IMD Decile (1=Most Deprived)":9,
+            "Income Decile":7,
+            "Employment Decile":7,
+            "Education Decile":7,
+            "Health Decile":9,
+            "Crime Decile":10,
+            "Housing and Services Decile":7,
+            "Living Environment Decile":8
+        },
+        {
+            "LSOA Name":"Winchester 007D",
+            "IMD Score":6.16,
+            "IMD Decile (1=Most Deprived)":9,
+            "Income Decile":9,
+            "Employment Decile":9,
+            "Education Decile":10,
+            "Health Decile":10,
+            "Crime Decile":4,
+            "Housing and Services Decile":8,
+            "Living Environment Decile":6
+        },
+        {
+            "LSOA Name":"Winchester 007F",
+            "IMD Score":8.2,
+            "IMD Decile (1=Most Deprived)":9,
+            "Income Decile":8,
+            "Employment Decile":7,
+            "Education Decile":10,
+            "Health Decile":8,
+            "Crime Decile":5,
+            "Housing and Services Decile":8,
+            "Living Environment Decile":5
+        },
+        {
+            "LSOA Name":"Winchester 008D",
+            "IMD Score":7.54,
+            "IMD Decile (1=Most Deprived)":9,
+            "Income Decile":7,
+            "Employment Decile":9,
+            "Education Decile":10,
+            "Health Decile":9,
+            "Crime Decile":6,
+            "Housing and Services Decile":3,
+            "Living Environment Decile":9
+        },
+        {
+            "LSOA Name":"Winchester 007E",
+            "IMD Score":6.07,
+            "IMD Decile (1=Most Deprived)":9,
+            "Income Decile":8,
+            "Employment Decile":8,
+            "Education Decile":10,
+            "Health Decile":10,
+            "Crime Decile":8,
+            "Housing and Services Decile":5,
+            "Living Environment Decile":7
+        },
+        {
+            "LSOA Name":"Winchester 003B",
+            "IMD Score":7.19,
+            "IMD Decile (1=Most Deprived)":9,
+            "Income Decile":8,
+            "Employment Decile":9,
+            "Education Decile":10,
+            "Health Decile":8,
+            "Crime Decile":10,
+            "Housing and Services Decile":2,
+            "Living Environment Decile":10
+        },
+        {
+            "LSOA Name":"Winchester 007C",
+            "IMD Score":7.21,
+            "IMD Decile (1=Most Deprived)":9,
+            "Income Decile":8,
+            "Employment Decile":8,
+            "Education Decile":10,
+            "Health Decile":8,
+            "Crime Decile":9,
+            "Housing and Services Decile":3,
+            "Living Environment Decile":10
+        },
+        {
+            "LSOA Name":"Winchester 010C",
+            "IMD Score":1.92,
+            "IMD Decile (1=Most Deprived)":10,
+            "Income Decile":10,
+            "Employment Decile":10,
+            "Education Decile":10,
+            "Health Decile":10,
+            "Crime Decile":8,
+            "Housing and Services Decile":9,
+            "Living Environment Decile":8
+        },
+        {
+            "LSOA Name":"Winchester 010A",
+            "IMD Score":2.77,
+            "IMD Decile (1=Most Deprived)":10,
+            "Income Decile":9,
+            "Employment Decile":10,
+            "Education Decile":10,
+            "Health Decile":10,
+            "Crime Decile":10,
+            "Housing and Services Decile":10,
+            "Living Environment Decile":6
+        },
+        {
+            "LSOA Name":"Winchester 012A",
+            "IMD Score":4.79,
+            "IMD Decile (1=Most Deprived)":10,
+            "Income Decile":10,
+            "Employment Decile":10,
+            "Education Decile":8,
+            "Health Decile":10,
+            "Crime Decile":10,
+            "Housing and Services Decile":4,
+            "Living Environment Decile":8
+        },
+        {
+            "LSOA Name":"Winchester 012C",
+            "IMD Score":5.6,
+            "IMD Decile (1=Most Deprived)":10,
+            "Income Decile":10,
+            "Employment Decile":10,
+            "Education Decile":10,
+            "Health Decile":9,
+            "Crime Decile":6,
+            "Housing and Services Decile":4,
+            "Living Environment Decile":6
+        },
+        {
+            "LSOA Name":"Winchester 014B",
+            "IMD Score":5.67,
+            "IMD Decile (1=Most Deprived)":10,
+            "Income Decile":10,
+            "Employment Decile":10,
+            "Education Decile":10,
+            "Health Decile":10,
+            "Crime Decile":9,
+            "Housing and Services Decile":3,
+            "Living Environment Decile":7
+        },
+        {
+            "LSOA Name":"Winchester 010D",
+            "IMD Score":5.0,
+            "IMD Decile (1=Most Deprived)":10,
+            "Income Decile":10,
+            "Employment Decile":9,
+            "Education Decile":10,
+            "Health Decile":10,
+            "Crime Decile":8,
+            "Housing and Services Decile":4,
+            "Living Environment Decile":6
+        },
+        {
+            "LSOA Name":"Winchester 009C",
+            "IMD Score":3.82,
+            "IMD Decile (1=Most Deprived)":10,
+            "Income Decile":10,
+            "Employment Decile":10,
+            "Education Decile":9,
+            "Health Decile":10,
+            "Crime Decile":9,
+            "Housing and Services Decile":6,
+            "Living Environment Decile":7
+        },
+        {
+            "LSOA Name":"Winchester 002C",
+            "IMD Score":2.74,
+            "IMD Decile (1=Most Deprived)":10,
+            "Income Decile":10,
+            "Employment Decile":10,
+            "Education Decile":10,
+            "Health Decile":10,
+            "Crime Decile":9,
+            "Housing and Services Decile":5,
+            "Living Environment Decile":9
+        },
+        {
+            "LSOA Name":"Winchester 003C",
+            "IMD Score":1.65,
+            "IMD Decile (1=Most Deprived)":10,
+            "Income Decile":10,
+            "Employment Decile":10,
+            "Education Decile":10,
+            "Health Decile":10,
+            "Crime Decile":10,
+            "Housing and Services Decile":6,
+            "Living Environment Decile":10
+        },
+        {
+            "LSOA Name":"Winchester 005A",
+            "IMD Score":2.92,
+            "IMD Decile (1=Most Deprived)":10,
+            "Income Decile":9,
+            "Employment Decile":9,
+            "Education Decile":10,
+            "Health Decile":10,
+            "Crime Decile":9,
+            "Housing and Services Decile":9,
+            "Living Environment Decile":8
+        },
+        {
+            "LSOA Name":"Winchester 009D",
+            "IMD Score":1.18,
+            "IMD Decile (1=Most Deprived)":10,
+            "Income Decile":10,
+            "Employment Decile":10,
+            "Education Decile":10,
+            "Health Decile":10,
+            "Crime Decile":10,
+            "Housing and Services Decile":10,
+            "Living Environment Decile":9
+        },
+        {
+            "LSOA Name":"Winchester 002D",
+            "IMD Score":4.02,
+            "IMD Decile (1=Most Deprived)":10,
+            "Income Decile":10,
+            "Employment Decile":10,
+            "Education Decile":10,
+            "Health Decile":10,
+            "Crime Decile":9,
+            "Housing and Services Decile":5,
+            "Living Environment Decile":7
+        },
+        {
+            "LSOA Name":"Winchester 009B",
+            "IMD Score":3.2,
+            "IMD Decile (1=Most Deprived)":10,
+            "Income Decile":10,
+            "Employment Decile":10,
+            "Education Decile":10,
+            "Health Decile":10,
+            "Crime Decile":8,
+            "Housing and Services Decile":4,
+            "Living Environment Decile":9
+        },
+        {
+            "LSOA Name":"Winchester 003A",
+            "IMD Score":4.62,
+            "IMD Decile (1=Most Deprived)":10,
+            "Income Decile":9,
+            "Employment Decile":8,
+            "Education Decile":9,
+            "Health Decile":10,
+            "Crime Decile":10,
+            "Housing and Services Decile":6,
+            "Living Environment Decile":10
+        },
+        {
+            "LSOA Name":"Winchester 005D",
+            "IMD Score":2.61,
+            "IMD Decile (1=Most Deprived)":10,
+            "Income Decile":10,
+            "Employment Decile":10,
+            "Education Decile":10,
+            "Health Decile":10,
+            "Crime Decile":9,
+            "Housing and Services Decile":10,
+            "Living Environment Decile":4
+        },
+        {
+            "LSOA Name":"Winchester 009E",
+            "IMD Score":5.44,
+            "IMD Decile (1=Most Deprived)":10,
+            "Income Decile":9,
+            "Employment Decile":8,
+            "Education Decile":10,
+            "Health Decile":9,
+            "Crime Decile":6,
+            "Housing and Services Decile":6,
+            "Living Environment Decile":9
+        },
+        {
+            "LSOA Name":"Winchester 005F",
+            "IMD Score":3.98,
+            "IMD Decile (1=Most Deprived)":10,
+            "Income Decile":10,
+            "Employment Decile":10,
+            "Education Decile":9,
+            "Health Decile":7,
+            "Crime Decile":8,
+            "Housing and Services Decile":8,
+            "Living Environment Decile":8
+        },
+        {
+            "LSOA Name":"Winchester 005E",
+            "IMD Score":4.12,
+            "IMD Decile (1=Most Deprived)":10,
+            "Income Decile":10,
+            "Employment Decile":10,
+            "Education Decile":10,
+            "Health Decile":10,
+            "Crime Decile":6,
+            "Housing and Services Decile":4,
+            "Living Environment Decile":9
+        },
+        {
+            "LSOA Name":"Winchester 012E",
+            "IMD Score":3.8,
+            "IMD Decile (1=Most Deprived)":10,
+            "Income Decile":9,
+            "Employment Decile":10,
+            "Education Decile":8,
+            "Health Decile":10,
+            "Crime Decile":9,
+            "Housing and Services Decile":7,
+            "Living Environment Decile":7
+        },
+        {
+            "LSOA Name":"Winchester 012F",
+            "IMD Score":4.18,
+            "IMD Decile (1=Most Deprived)":10,
+            "Income Decile":9,
+            "Employment Decile":10,
+            "Education Decile":10,
+            "Health Decile":10,
+            "Crime Decile":9,
+            "Housing and Services Decile":6,
+            "Living Environment Decile":6
+        },
+        {
+            "LSOA Name":"Winchester 004B",
+            "IMD Score":4.8,
+            "IMD Decile (1=Most Deprived)":10,
+            "Income Decile":8,
+            "Employment Decile":8,
+            "Education Decile":9,
+            "Health Decile":9,
+            "Crime Decile":10,
+            "Housing and Services Decile":8,
+            "Living Environment Decile":10
+        },
+        {
+            "LSOA Name":"Winchester 011C",
+            "IMD Score":3.27,
+            "IMD Decile (1=Most Deprived)":10,
+            "Income Decile":9,
+            "Employment Decile":10,
+            "Education Decile":10,
+            "Health Decile":10,
+            "Crime Decile":7,
+            "Housing and Services Decile":7,
+            "Living Environment Decile":8
+        }
+    ];
+</script>
+
+
+    <script src="resources/qgis2web_expressions.js"></script>
+<script src="./resources/functions.js"></script>
+<script src="./resources/ol.js"></script>
+<script src="./resources/ol-layerswitcher.js"></script>
+<script src="resources/photon-geocoder-autocomplete.min.js"></script>
+<script src="layers/TUNDRA_1.js"></script><script src="layers/LivingEnvironmentScore_2.js"></script><script src="layers/HealthDeprivationandDisabilityScore_3.js"></script><script src="layers/AccesstoHousingandServicesScore_4.js"></script><script src="layers/CrimeScore_5.js"></script><script src="layers/EducationSkillsandTrainingScore_6.js"></script><script src="layers/EmploymentScore_7.js"></script><script src="layers/IncomeScores_8.js"></script><script src="layers/MultiScoreDeprivation_9.js"></script>
+<script src="styles/TUNDRA_1_style.js"></script><script src="styles/LivingEnvironmentScore_2_style.js"></script><script src="styles/HealthDeprivationandDisabilityScore_3_style.js"></script><script src="styles/AccesstoHousingandServicesScore_4_style.js"></script><script src="styles/CrimeScore_5_style.js"></script><script src="styles/EducationSkillsandTrainingScore_6_style.js"></script><script src="styles/EmploymentScore_7_style.js"></script><script src="styles/IncomeScores_8_style.js"></script><script src="styles/MultiScoreDeprivation_9_style.js"></script>
+<script src="./layers/layers.js" type="text/javascript"></script> 
+<script src="./resources/Autolinker.min.js"></script>
+<script src="./resources/qgis2web.js"></script>
+
+<script>
+    
+    // DataTables Initialization
+    $(document).ready(function() {
+        $('#imdTable').DataTable({
+            data: winchesterData.map(obj => Object.values(obj)), // Convert array of objects to array of arrays for DataTables
+            columns: [
+                // Set column properties, especially width
+                { title: "LSOA Name", width: "auto" }, // Column 1: Takes remaining space
+                { title: "IMD Score", width: "1%", className: "dt-center" }, // Column 2
+                { title: "IMD Decile", width: "1%", className: "dt-center" }, // Column 3
+                { title: "Income Decile", width: "1%", className: "dt-center" }, // Column 4
+                { title: "Employment Decile", width: "1%", className: "dt-center" }, // Column 5
+                { title: "Education Decile", width: "1%", className: "dt-center" }, // Column 6
+                { title: "Health Decile", width: "1%", className: "dt-center" }, // Column 7
+                { title: "Crime Decile", width: "1%", className: "dt-center" }, // Column 8
+                { title: "Housing/Services Decile", width: "1%", className: "dt-center" }, // Column 9
+                { title: "Living Env. Decile", width: "1%", className: "dt-center" } // Column 10
+            ],
+            paging: true,
+            searching: true,
+            info: true,
+            order: [[1, 'asc']], // Order by IMD Score (2nd column) ascending
+            // Crucially, tell DataTables to fit the width to the container:
+            scrollX: false,
+            autoWidth: true
+        });
+    });
+</script>
+<script>
+    // Wait until the document is fully loaded before trying to find elements
+    document.addEventListener('DOMContentLoaded', (event) => {
+        const navToggle = document.getElementById('navToggle');
+        const navLinks = document.querySelector('.nav-links');
+
+        if (navToggle && navLinks) {
+            navToggle.addEventListener('click', () => {
+                // This is the correct, class-toggling method
+                navLinks.classList.toggle('open');
+            });
+        }
+    });
+</script>
+
+</body>
+</html>
+
+</body>
+</html>

@@ -1,0 +1,642 @@
+const ClusterData = [
+    {
+        "LSOA Name":"Winchester 006C",
+        "IMD Score":28.9,
+        "IMD Decile (1=Most Deprived)":3,
+        "Income Decile":3,
+        "Employment Decile":3,
+        "Education Decile":2,
+        "Health Decile":4,
+        "Crime Decile":5
+    },
+    {
+        "LSOA Name":"Winchester 006A",
+        "IMD Score":22.23,
+        "IMD Decile (1=Most Deprived)":4,
+        "Income Decile":3,
+        "Employment Decile":4,
+        "Education Decile":9,
+        "Health Decile":5,
+        "Crime Decile":2
+    },
+    {
+        "LSOA Name":"Winchester 008A",
+        "IMD Score":26.24,
+        "IMD Decile (1=Most Deprived)":4,
+        "Income Decile":4,
+        "Employment Decile":5,
+        "Education Decile":1,
+        "Health Decile":4,
+        "Crime Decile":7
+    },
+    {
+        "LSOA Name":"Winchester 008B",
+        "IMD Score":25.97,
+        "IMD Decile (1=Most Deprived)":4,
+        "Income Decile":4,
+        "Employment Decile":5,
+        "Education Decile":1,
+        "Health Decile":4,
+        "Crime Decile":4
+    },
+    {
+        "LSOA Name":"Winchester 006E",
+        "IMD Score":19.82,
+        "IMD Decile (1=Most Deprived)":5,
+        "Income Decile":6,
+        "Employment Decile":5,
+        "Education Decile":2,
+        "Health Decile":7,
+        "Crime Decile":6
+    },
+    {
+        "LSOA Name":"Winchester 001C",
+        "IMD Score":18.84,
+        "IMD Decile (1=Most Deprived)":5,
+        "Income Decile":8,
+        "Employment Decile":10,
+        "Education Decile":8,
+        "Health Decile":10,
+        "Crime Decile":5
+    },
+    {
+        "LSOA Name":"Winchester 013E",
+        "IMD Score":20.24,
+        "IMD Decile (1=Most Deprived)":5,
+        "Income Decile":5,
+        "Employment Decile":4,
+        "Education Decile":2,
+        "Health Decile":7,
+        "Crime Decile":4
+    },
+    {
+        "LSOA Name":"Winchester 008C",
+        "IMD Score":21.12,
+        "IMD Decile (1=Most Deprived)":5,
+        "Income Decile":6,
+        "Employment Decile":8,
+        "Education Decile":2,
+        "Health Decile":4,
+        "Crime Decile":7
+    },
+    {
+        "LSOA Name":"Winchester 005C",
+        "IMD Score":15.03,
+        "IMD Decile (1=Most Deprived)":6,
+        "Income Decile":5,
+        "Employment Decile":5,
+        "Education Decile":5,
+        "Health Decile":6,
+        "Crime Decile":7
+    },
+    {
+        "LSOA Name":"Winchester 002A",
+        "IMD Score":16.24,
+        "IMD Decile (1=Most Deprived)":6,
+        "Income Decile":10,
+        "Employment Decile":10,
+        "Education Decile":9,
+        "Health Decile":10,
+        "Crime Decile":4
+    },
+    {
+        "LSOA Name":"Winchester 002B",
+        "IMD Score":17.42,
+        "IMD Decile (1=Most Deprived)":6,
+        "Income Decile":5,
+        "Employment Decile":4,
+        "Education Decile":4,
+        "Health Decile":7,
+        "Crime Decile":8
+    },
+    {
+        "LSOA Name":"Winchester 007A",
+        "IMD Score":13.88,
+        "IMD Decile (1=Most Deprived)":7,
+        "Income Decile":6,
+        "Employment Decile":5,
+        "Education Decile":10,
+        "Health Decile":7,
+        "Crime Decile":4
+    },
+    {
+        "LSOA Name":"Winchester 004A",
+        "IMD Score":14.21,
+        "IMD Decile (1=Most Deprived)":7,
+        "Income Decile":9,
+        "Employment Decile":10,
+        "Education Decile":9,
+        "Health Decile":10,
+        "Crime Decile":7
+    },
+    {
+        "LSOA Name":"Winchester 011A",
+        "IMD Score":11.99,
+        "IMD Decile (1=Most Deprived)":7,
+        "Income Decile":8,
+        "Employment Decile":8,
+        "Education Decile":9,
+        "Health Decile":10,
+        "Crime Decile":6
+    },
+    {
+        "LSOA Name":"Winchester 012B",
+        "IMD Score":12.02,
+        "IMD Decile (1=Most Deprived)":7,
+        "Income Decile":6,
+        "Employment Decile":5,
+        "Education Decile":7,
+        "Health Decile":8,
+        "Crime Decile":6
+    },
+    {
+        "LSOA Name":"Winchester 012D",
+        "IMD Score":13.2,
+        "IMD Decile (1=Most Deprived)":7,
+        "Income Decile":5,
+        "Employment Decile":6,
+        "Education Decile":4,
+        "Health Decile":8,
+        "Crime Decile":7
+    },
+    {
+        "LSOA Name":"Winchester 006B",
+        "IMD Score":13.85,
+        "IMD Decile (1=Most Deprived)":7,
+        "Income Decile":6,
+        "Employment Decile":6,
+        "Education Decile":5,
+        "Health Decile":8,
+        "Crime Decile":7
+    },
+    {
+        "LSOA Name":"Winchester 006D",
+        "IMD Score":13.88,
+        "IMD Decile (1=Most Deprived)":7,
+        "Income Decile":6,
+        "Employment Decile":6,
+        "Education Decile":8,
+        "Health Decile":7,
+        "Crime Decile":4
+    },
+    {
+        "LSOA Name":"Winchester 013B",
+        "IMD Score":12.88,
+        "IMD Decile (1=Most Deprived)":7,
+        "Income Decile":7,
+        "Employment Decile":8,
+        "Education Decile":7,
+        "Health Decile":9,
+        "Crime Decile":9
+    },
+    {
+        "LSOA Name":"Winchester 011D",
+        "IMD Score":13.7,
+        "IMD Decile (1=Most Deprived)":7,
+        "Income Decile":10,
+        "Employment Decile":10,
+        "Education Decile":9,
+        "Health Decile":10,
+        "Crime Decile":8
+    },
+    {
+        "LSOA Name":"Winchester 011E",
+        "IMD Score":11.56,
+        "IMD Decile (1=Most Deprived)":7,
+        "Income Decile":9,
+        "Employment Decile":10,
+        "Education Decile":10,
+        "Health Decile":10,
+        "Crime Decile":4
+    },
+    {
+        "LSOA Name":"Winchester 004D",
+        "IMD Score":9.95,
+        "IMD Decile (1=Most Deprived)":8,
+        "Income Decile":8,
+        "Employment Decile":9,
+        "Education Decile":8,
+        "Health Decile":9,
+        "Crime Decile":9
+    },
+    {
+        "LSOA Name":"Winchester 003E",
+        "IMD Score":10.16,
+        "IMD Decile (1=Most Deprived)":8,
+        "Income Decile":9,
+        "Employment Decile":9,
+        "Education Decile":9,
+        "Health Decile":10,
+        "Crime Decile":8
+    },
+    {
+        "LSOA Name":"Winchester 001A",
+        "IMD Score":10.94,
+        "IMD Decile (1=Most Deprived)":8,
+        "Income Decile":9,
+        "Employment Decile":8,
+        "Education Decile":8,
+        "Health Decile":9,
+        "Crime Decile":7
+    },
+    {
+        "LSOA Name":"Winchester 014C",
+        "IMD Score":11.09,
+        "IMD Decile (1=Most Deprived)":8,
+        "Income Decile":6,
+        "Employment Decile":7,
+        "Education Decile":7,
+        "Health Decile":10,
+        "Crime Decile":3
+    },
+    {
+        "LSOA Name":"Winchester 013A",
+        "IMD Score":10.88,
+        "IMD Decile (1=Most Deprived)":8,
+        "Income Decile":8,
+        "Employment Decile":9,
+        "Education Decile":9,
+        "Health Decile":9,
+        "Crime Decile":7
+    },
+    {
+        "LSOA Name":"Winchester 010E",
+        "IMD Score":9.73,
+        "IMD Decile (1=Most Deprived)":8,
+        "Income Decile":9,
+        "Employment Decile":10,
+        "Education Decile":9,
+        "Health Decile":10,
+        "Crime Decile":10
+    },
+    {
+        "LSOA Name":"Winchester 005B",
+        "IMD Score":10.52,
+        "IMD Decile (1=Most Deprived)":8,
+        "Income Decile":6,
+        "Employment Decile":5,
+        "Education Decile":9,
+        "Health Decile":8,
+        "Crime Decile":9
+    },
+    {
+        "LSOA Name":"Winchester 003D",
+        "IMD Score":9.1,
+        "IMD Decile (1=Most Deprived)":8,
+        "Income Decile":8,
+        "Employment Decile":8,
+        "Education Decile":10,
+        "Health Decile":8,
+        "Crime Decile":8
+    },
+    {
+        "LSOA Name":"Winchester 007B",
+        "IMD Score":7.43,
+        "IMD Decile (1=Most Deprived)":9,
+        "Income Decile":8,
+        "Employment Decile":8,
+        "Education Decile":10,
+        "Health Decile":10,
+        "Crime Decile":6
+    },
+    {
+        "LSOA Name":"Winchester 009A",
+        "IMD Score":6.85,
+        "IMD Decile (1=Most Deprived)":9,
+        "Income Decile":10,
+        "Employment Decile":10,
+        "Education Decile":10,
+        "Health Decile":10,
+        "Crime Decile":8
+    },
+    {
+        "LSOA Name":"Winchester 010B",
+        "IMD Score":7.96,
+        "IMD Decile (1=Most Deprived)":9,
+        "Income Decile":7,
+        "Employment Decile":7,
+        "Education Decile":8,
+        "Health Decile":8,
+        "Crime Decile":8
+    },
+    {
+        "LSOA Name":"Winchester 011B",
+        "IMD Score":7.33,
+        "IMD Decile (1=Most Deprived)":9,
+        "Income Decile":8,
+        "Employment Decile":9,
+        "Education Decile":9,
+        "Health Decile":9,
+        "Crime Decile":6
+    },
+    {
+        "LSOA Name":"Winchester 004E",
+        "IMD Score":7.68,
+        "IMD Decile (1=Most Deprived)":9,
+        "Income Decile":7,
+        "Employment Decile":7,
+        "Education Decile":7,
+        "Health Decile":9,
+        "Crime Decile":10
+    },
+    {
+        "LSOA Name":"Winchester 007D",
+        "IMD Score":6.16,
+        "IMD Decile (1=Most Deprived)":9,
+        "Income Decile":9,
+        "Employment Decile":9,
+        "Education Decile":10,
+        "Health Decile":10,
+        "Crime Decile":4
+    },
+    {
+        "LSOA Name":"Winchester 007F",
+        "IMD Score":8.2,
+        "IMD Decile (1=Most Deprived)":9,
+        "Income Decile":8,
+        "Employment Decile":7,
+        "Education Decile":10,
+        "Health Decile":8,
+        "Crime Decile":5
+    },
+    {
+        "LSOA Name":"Winchester 008D",
+        "IMD Score":7.54,
+        "IMD Decile (1=Most Deprived)":9,
+        "Income Decile":7,
+        "Employment Decile":9,
+        "Education Decile":10,
+        "Health Decile":9,
+        "Crime Decile":6
+    },
+    {
+        "LSOA Name":"Winchester 007E",
+        "IMD Score":6.07,
+        "IMD Decile (1=Most Deprived)":9,
+        "Income Decile":8,
+        "Employment Decile":8,
+        "Education Decile":10,
+        "Health Decile":10,
+        "Crime Decile":8
+    },
+    {
+        "LSOA Name":"Winchester 003B",
+        "IMD Score":7.19,
+        "IMD Decile (1=Most Deprived)":9,
+        "Income Decile":8,
+        "Employment Decile":9,
+        "Education Decile":10,
+        "Health Decile":8,
+        "Crime Decile":10
+    },
+    {
+        "LSOA Name":"Winchester 007C",
+        "IMD Score":7.21,
+        "IMD Decile (1=Most Deprived)":9,
+        "Income Decile":8,
+        "Employment Decile":8,
+        "Education Decile":10,
+        "Health Decile":8,
+        "Crime Decile":9
+    },
+    {
+        "LSOA Name":"Winchester 010C",
+        "IMD Score":1.92,
+        "IMD Decile (1=Most Deprived)":10,
+        "Income Decile":10,
+        "Employment Decile":10,
+        "Education Decile":10,
+        "Health Decile":10,
+        "Crime Decile":8
+    },
+    {
+        "LSOA Name":"Winchester 010A",
+        "IMD Score":2.77,
+        "IMD Decile (1=Most Deprived)":10,
+        "Income Decile":9,
+        "Employment Decile":10,
+        "Education Decile":10,
+        "Health Decile":10,
+        "Crime Decile":10
+    },
+    {
+        "LSOA Name":"Winchester 012A",
+        "IMD Score":4.79,
+        "IMD Decile (1=Most Deprived)":10,
+        "Income Decile":10,
+        "Employment Decile":10,
+        "Education Decile":8,
+        "Health Decile":10,
+        "Crime Decile":10
+    },
+    {
+        "LSOA Name":"Winchester 012C",
+        "IMD Score":5.6,
+        "IMD Decile (1=Most Deprived)":10,
+        "Income Decile":10,
+        "Employment Decile":10,
+        "Education Decile":10,
+        "Health Decile":9,
+        "Crime Decile":6
+    },
+    {
+        "LSOA Name":"Winchester 014B",
+        "IMD Score":5.67,
+        "IMD Decile (1=Most Deprived)":10,
+        "Income Decile":10,
+        "Employment Decile":10,
+        "Education Decile":10,
+        "Health Decile":10,
+        "Crime Decile":9
+    },
+    {
+        "LSOA Name":"Winchester 010D",
+        "IMD Score":5.0,
+        "IMD Decile (1=Most Deprived)":10,
+        "Income Decile":10,
+        "Employment Decile":9,
+        "Education Decile":10,
+        "Health Decile":10,
+        "Crime Decile":8
+    },
+    {
+        "LSOA Name":"Winchester 009C",
+        "IMD Score":3.82,
+        "IMD Decile (1=Most Deprived)":10,
+        "Income Decile":10,
+        "Employment Decile":10,
+        "Education Decile":9,
+        "Health Decile":10,
+        "Crime Decile":9
+    },
+    {
+        "LSOA Name":"Winchester 002C",
+        "IMD Score":2.74,
+        "IMD Decile (1=Most Deprived)":10,
+        "Income Decile":10,
+        "Employment Decile":10,
+        "Education Decile":10,
+        "Health Decile":10,
+        "Crime Decile":9
+    },
+    {
+        "LSOA Name":"Winchester 003C",
+        "IMD Score":1.65,
+        "IMD Decile (1=Most Deprived)":10,
+        "Income Decile":10,
+        "Employment Decile":10,
+        "Education Decile":10,
+        "Health Decile":10,
+        "Crime Decile":10
+    },
+    {
+        "LSOA Name":"Winchester 005A",
+        "IMD Score":2.92,
+        "IMD Decile (1=Most Deprived)":10,
+        "Income Decile":9,
+        "Employment Decile":9,
+        "Education Decile":10,
+        "Health Decile":10,
+        "Crime Decile":9
+    },
+    {
+        "LSOA Name":"Winchester 009D",
+        "IMD Score":1.18,
+        "IMD Decile (1=Most Deprived)":10,
+        "Income Decile":10,
+        "Employment Decile":10,
+        "Education Decile":10,
+        "Health Decile":10,
+        "Crime Decile":10
+    },
+    {
+        "LSOA Name":"Winchester 002D",
+        "IMD Score":4.02,
+        "IMD Decile (1=Most Deprived)":10,
+        "Income Decile":10,
+        "Employment Decile":10,
+        "Education Decile":10,
+        "Health Decile":10,
+        "Crime Decile":9
+    },
+    {
+        "LSOA Name":"Winchester 009B",
+        "IMD Score":3.2,
+        "IMD Decile (1=Most Deprived)":10,
+        "Income Decile":10,
+        "Employment Decile":10,
+        "Education Decile":10,
+        "Health Decile":10,
+        "Crime Decile":8
+    },
+    {
+        "LSOA Name":"Winchester 003A",
+        "IMD Score":4.62,
+        "IMD Decile (1=Most Deprived)":10,
+        "Income Decile":9,
+        "Employment Decile":8,
+        "Education Decile":9,
+        "Health Decile":10,
+        "Crime Decile":10
+    },
+    {
+        "LSOA Name":"Winchester 005D",
+        "IMD Score":2.61,
+        "IMD Decile (1=Most Deprived)":10,
+        "Income Decile":10,
+        "Employment Decile":10,
+        "Education Decile":10,
+        "Health Decile":10,
+        "Crime Decile":9
+    },
+    {
+        "LSOA Name":"Winchester 009E",
+        "IMD Score":5.44,
+        "IMD Decile (1=Most Deprived)":10,
+        "Income Decile":9,
+        "Employment Decile":8,
+        "Education Decile":10,
+        "Health Decile":9,
+        "Crime Decile":6
+    },
+    {
+        "LSOA Name":"Winchester 005F",
+        "IMD Score":3.98,
+        "IMD Decile (1=Most Deprived)":10,
+        "Income Decile":10,
+        "Employment Decile":10,
+        "Education Decile":9,
+        "Health Decile":7,
+        "Crime Decile":8
+    },
+    {
+        "LSOA Name":"Winchester 005E",
+        "IMD Score":4.12,
+        "IMD Decile (1=Most Deprived)":10,
+        "Income Decile":10,
+        "Employment Decile":10,
+        "Education Decile":10,
+        "Health Decile":10,
+        "Crime Decile":6
+    },
+    {
+        "LSOA Name":"Winchester 012E",
+        "IMD Score":3.8,
+        "IMD Decile (1=Most Deprived)":10,
+        "Income Decile":9,
+        "Employment Decile":10,
+        "Education Decile":8,
+        "Health Decile":10,
+        "Crime Decile":9
+    },
+    {
+        "LSOA Name":"Winchester 012F",
+        "IMD Score":4.18,
+        "IMD Decile (1=Most Deprived)":10,
+        "Income Decile":9,
+        "Employment Decile":10,
+        "Education Decile":10,
+        "Health Decile":10,
+        "Crime Decile":9
+    },
+    {
+        "LSOA Name":"Winchester 004B",
+        "IMD Score":4.8,
+        "IMD Decile (1=Most Deprived)":10,
+        "Income Decile":8,
+        "Employment Decile":8,
+        "Education Decile":9,
+        "Health Decile":9,
+        "Crime Decile":10
+    },
+    {
+        "LSOA Name":"Winchester 011C",
+        "IMD Score":3.27,
+        "IMD Decile (1=Most Deprived)":10,
+        "Income Decile":9,
+        "Employment Decile":10,
+        "Education Decile":10,
+        "Health Decile":10,
+        "Crime Decile":8
+    },
+    {
+        "LSOA Name":"Winchester 004C",
+        "IMD Score":3.22,
+        "IMD Decile (1=Most Deprived)":10,
+        "Income Decile":10,
+        "Employment Decile":10,
+        "Education Decile":10,
+        "Health Decile":10,
+        "Crime Decile":10
+    },
+    {
+        "LSOA Name":"Winchester 001B",
+        "IMD Score":2.15,
+        "IMD Decile (1=Most Deprived)":10,
+        "Income Decile":10,
+        "Employment Decile":10,
+        "Education Decile":10,
+        "Health Decile":10,
+        "Crime Decile":10
+    }
+];

@@ -81,8 +81,8 @@
         border-radius: 4px;
       }
       #search-btn {
-        padding: 6px 10px;
-        margin-left: 5px;
+        padding: 10px 15px;
+        margin-left: 10px;
         border: none;
         background-color: #0077cc;
         color: #fff;
@@ -92,6 +92,34 @@
       #search-btn:hover {
         background-color: #005fa3;
       }
+      
+      /* --- Detail Link Box (Improved) --- */
+      .detail-link-box {
+        display: block; /* Change to block for full-width click */
+        text-align: center;
+        border: 2px solid var(--primary-color);
+        border-radius: 8px;
+        padding: 12px 15px;
+        margin: 20px 0;
+        background-color: #e6f2ff; /* Very light blue */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+      }
+
+      .detail-link-box:hover {
+        background-color: #cce0ff;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      .detail-link-box a {
+        font-size: 1.1rem;
+        text-decoration: none;
+        color: var(--primary-color);
+        font-weight: 700;
+      }
+    
+      
     </style>
   </head>
   <body>
@@ -117,24 +145,12 @@
           </p>
         </div>
         
-        <div style="
-    display: inline-block; 
-    border: 2px solid #3949ab; /* Blue border to match section titles */
-    border-radius: 8px; 
-    padding: 8px 15px; 
-    margin: 20px 0; 
-    background-color: #e8ebf7; /* Light background color */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-">
-    <p style="margin: 0;">
-        <a href="Tab2/cluster_details.html" target="_blank" style="
-            font-size: 1.5rem; 
-            text-decoration: none; 
-            color: #1a237e; /* Deep blue text color */
-            font-weight: 600;
-        ">Detailed Breakdown</a>
-    </p>
-</div>
+        <div class="detail-link-box">
+          <a href="Tab2/cluster_details.html" target="_blank">
+            Detailed Cluster Breakdown
+          </a>
+        </div>
+        
         <div id="layer-context">
           <h3>Polling Estimates</h3>
           <p>
